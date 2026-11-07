@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Open module issues (help wanted)
+    url: https://github.com/thecolab-ai/colab-howtos/issues?q=is%3Aopen+label%3Amodule
+    about: Techniques from the recaps waiting for someone to build them. Comment on one to claim it.
+  - name: The Colab
+    url: https://thecolab.ai
+    about: The community these how-tos come from.

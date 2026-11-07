@@ -1,0 +1,47 @@
+name: Claim a module
+description: You want to build a module that has no issue yet. For an existing module issue, comment on it instead.
+title: "Module: "
+labels: ["module", "claimed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this when you want to build a module for a technique that doesn't have an open issue yet.
+        If there is already an issue labelled `module`, just comment "I'll take this" on it.
+        See [CONTRIBUTING.md](https://github.com/thecolab-ai/colab-howtos/blob/main/CONTRIBUTING.md) for the format.
+  - type: input
+    id: slug
+    attributes:
+      label: Module folder
+      description: modules/howto-<slug>/ with a short kebab-case slug.
+      placeholder: howto-session-logs-into-a-database
+    validations:
+      required: true
+  - type: input
+    id: recap
+    attributes:
+      label: Recap
+      description: The recap week the technique came from, if any, e.g. 2026-W45.
+  - type: textarea
+    id: plan
+    attributes:
+      label: What the module covers and how you'll test it
+      description: What a reader ends up with, and what you'll run to check the steps work.
+    validations:
+      required: true
+  - type: input
+    id: credit
+    attributes:
+      label: How to credit you
+      description: A first name or your GitHub username. This goes in howto.json under contributors.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you start
+      options:
+        - label: I'll keep private links, secrets and other people's personal details out of the module.
+          required: true
+        - label: I'll mark any step I couldn't test.
+          required: true

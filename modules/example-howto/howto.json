@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schema/howto.schema.json",
+  "title": "Example: how a how-to module is laid out",
+  "tags": [
+    "example"
+  ],
+  "difficulty": "beginner",
+  "status": "tested",
+  "contributors": [
+    "adam91holt"
+  ],
+  "example": true
+}

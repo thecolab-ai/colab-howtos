@@ -1,0 +1,124 @@
+name: Upstream drift
+
+# Compares tools/validate_course.py with the upstream copy it was vendored from, nightly,
+# and opens an issue (once) if they differ. Moved out of validate.yml because that file
+# is now a reusable workflow called by Pages, and a called workflow can't ask for
+# issues: write when its caller only grants issues: read.
+
+on:
+  schedule:
+    # Nightly, about 3am NZ time.
+    - cron: "17 14 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  upstream-drift:
+    runs-on: ubuntu-latest
+    env:
+      UPSTREAM_REPO: mycourse-work/dronetrust
+      UPSTREAM_PATH: .skills/mycourse-course-authoring/scripts/validate_course.py
+      VENDORED: tools/validate_course.py
+      ISSUE_TITLE: "Upstream drift: tools/validate_course.py"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compare with upstream
+        id: upstream
+        env:
+          # Optional. The upstream repo is private, so GITHUB_TOKEN can't read it.
+          # Set MYCOURSE_READ_TOKEN to a fine-grained token with Contents: read on it.
+          READ_TOKEN: ${{ secrets.MYCOURSE_READ_TOKEN }}
+          FALLBACK_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          token="${READ_TOKEN:-}"
+          if [ -z "${token}" ]; then
+            if GH_TOKEN="${FALLBACK_TOKEN}" gh api "repos/${UPSTREAM_REPO}" --silent 2>/dev/null; then
+              token="${FALLBACK_TOKEN}"
+            else
+              echo "::notice title=Drift check skipped::${UPSTREAM_REPO} is not readable with GITHUB_TOKEN and MYCOURSE_READ_TOKEN is not set."
+              echo "drift=false" >> "${GITHUB_OUTPUT}"
+              exit 0
+            fi
+          fi
+
+          pinned="$(sed -n 's/^# vendored: commit \([0-9a-f]\{40\}\)$/\1/p' "${VENDORED}")"
+          if [ -z "${pinned}" ]; then
+            echo "::error::No '# vendored: commit <sha>' line in ${VENDORED}"
+            exit 1
+          fi
+          latest="$(GH_TOKEN="${token}" gh api -X GET "repos/${UPSTREAM_REPO}/commits" \
+            -f path="${UPSTREAM_PATH}" -f per_page=1 --jq '.[0].sha')"
+          echo "pinned=${pinned}" >> "${GITHUB_OUTPUT}"
+          echo "latest=${latest}" >> "${GITHUB_OUTPUT}"
+
+          if [ "${latest}" = "${pinned}" ]; then
+            echo "No drift: upstream is still at ${pinned}"
+            echo "drift=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          upstream="${RUNNER_TEMP}/upstream_validate_course.py"
+          GH_TOKEN="${token}" gh api "repos/${UPSTREAM_REPO}/contents/${UPSTREAM_PATH}?ref=${latest}" \
+            -H "Accept: application/vnd.github.raw" > "${upstream}"
+          grep -v '^# vendored: ' "${VENDORED}" > "${RUNNER_TEMP}/vendored.py"
+          if diff -u "${RUNNER_TEMP}/vendored.py" "${upstream}" > "${RUNNER_TEMP}/drift.diff"; then
+            echo "::notice::Upstream moved to ${latest} but the file content is unchanged."
+            echo "drift=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          # Only counts go in the issue: the upstream source is private and this repo is public.
+          changed="$(tail -n +3 "${RUNNER_TEMP}/drift.diff" | grep -c '^[+-]' || true)"
+          echo "changed=${changed}" >> "${GITHUB_OUTPUT}"
+          {
+            for course in courses/*/; do
+              if out="$(python "${upstream}" "${course}" --repo-root . 2>&1)"; then
+                echo "- \`${course}\`: $(echo "${out}" | head -1)"
+              else
+                echo "- \`${course}\`: $(echo "${out}" | head -1) ($(echo "${out}" | grep -c '^ERROR' || true) errors)"
+              fi
+            done
+          } > "${RUNNER_TEMP}/results.md"
+          cat "${RUNNER_TEMP}/results.md"
+          echo "drift=true" >> "${GITHUB_OUTPUT}"
+
+      - name: Open an issue (once)
+        if: steps.upstream.outputs.drift == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PINNED: ${{ steps.upstream.outputs.pinned }}
+          LATEST: ${{ steps.upstream.outputs.latest }}
+          CHANGED: ${{ steps.upstream.outputs.changed }}
+        run: |
+          set -euo pipefail
+          existing="$(gh issue list --state open --limit 200 --json number,title \
+            | jq -r --arg t "${ISSUE_TITLE}" '.[] | select(.title == $t) | .number' | head -1)"
+          if [ -n "${existing}" ]; then
+            echo "::notice::Drift issue #${existing} is already open."
+            exit 0
+          fi
+          {
+            echo "The upstream mycourse validator has changed since it was vendored."
+            echo
+            echo "- Upstream: \`${UPSTREAM_REPO}\` \`${UPSTREAM_PATH}\`"
+            echo "- Vendored commit: \`${PINNED}\`"
+            echo "- Latest upstream commit: \`${LATEST}\`"
+            echo "- Changed lines: ${CHANGED}"
+            echo
+            echo "Upstream validator on this repo's courses:"
+            echo
+            cat "${RUNNER_TEMP}/results.md"
+            echo
+            echo "To update: copy the upstream file into \`${VENDORED}\`, keep the \`# vendored:\` header,"
+            echo "set its commit line to the new SHA, then run the checks in README.md."
+          } > "${RUNNER_TEMP}/issue.md"
+          gh issue create --title "${ISSUE_TITLE}" --body-file "${RUNNER_TEMP}/issue.md"

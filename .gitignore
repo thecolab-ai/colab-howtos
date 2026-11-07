@@ -1,0 +1,14 @@
+.DS_Store
+__pycache__/
+.venv/
+venv/
+
+# Site build output (scripts/build_site.py) and the issues list the Pages workflow fetches.
+_site/
+site/data/issues.json
+
+# No video in this repo, and no Git LFS.
+*.mp4
+*.mov
+*.m4v
+*.webm

@@ -1,0 +1,10 @@
+{
+  "id": "colab-howtos",
+  "title": "Colab how-tos",
+  "description": "Practical how-tos built by members of The Colab, a community of people in Aotearoa New Zealand building with AI. Each module covers one technique from a weekly recap.",
+  "estimatedDuration": "Self-paced",
+  "welcomePath": "welcome.md",
+  "modules": [
+    "example-howto"
+  ]
+}

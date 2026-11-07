@@ -1,0 +1,38 @@
+name: Suggest a how-to
+description: A technique you think should become a module. A maintainer turns good ones into module issues.
+title: "Suggestion: "
+labels: ["suggestion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. This is public, so please keep it free of private links, secrets and other people's personal details. First names only.
+  - type: textarea
+    id: technique
+    attributes:
+      label: The technique
+      description: What did someone get working, and why is it useful? A few sentences is plenty.
+    validations:
+      required: true
+  - type: input
+    id: recap
+    attributes:
+      label: Recap section (if any)
+      description: The recap week and section it came from, e.g. "2026-W45, Session logs into a database".
+  - type: textarea
+    id: needs
+    attributes:
+      label: What you'd need
+      description: Tools, accounts, hardware or skills someone would need to follow it.
+  - type: textarea
+    id: links
+    attributes:
+      label: Public links
+      description: Docs, repos or posts that help. Public links only.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy
+      options:
+        - label: This issue has no private links, secrets or other people's personal details.
+          required: true

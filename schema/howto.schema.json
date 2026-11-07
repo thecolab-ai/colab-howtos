@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/thecolab-ai/colab-howtos/schema/howto.schema.json",
+  "title": "Colab how-to metadata",
+  "description": "howto.json sits next to manifest.json in modules/howto-<slug>/. The course player ignores it; scripts/check_repo.py, scripts/build_index.py, scripts/build_site.py and CI read it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["title", "tags", "difficulty", "status", "contributors"],
+  "properties": {
+    "$schema": {
+      "description": "Optional pointer to this schema for editors.",
+      "type": "string"
+    },
+    "title": {
+      "description": "Must match manifest.json title and the first lesson's # heading.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "tags": {
+      "description": "Lowercase kebab-case tags. Must match manifest.json tags.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      }
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["beginner", "intermediate", "advanced"]
+    },
+    "status": {
+      "description": "seed: an outline from the recap, nobody has run the steps yet. draft: written up and partly worked through, with untested steps marked. tested: a contributor ran every step end to end, on the date given in the module's Notes. Replaces the old boolean 'tested' field.",
+      "type": "string",
+      "enum": ["seed", "draft", "tested"]
+    },
+    "contributors": {
+      "description": "Who built the module. One word each: a first name (e.g. Sam) or a GitHub username without the @ (e.g. octocat). No surnames, emails or handles from other sites.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[^\\s@<>,;:/]{1,39}$"
+      }
+    },
+    "example": {
+      "description": "true only for the format example module. Example modules are hidden on the site, left out of INDEX.md and never published.",
+      "type": "boolean"
+    },
+    "recap": {
+      "description": "ISO week of the recap the technique came from, e.g. 2026-W45. recaps/<recap>.md must exist.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-W(?:0[1-9]|[1-4][0-9]|5[0-3])$"
+    },
+    "issue": {
+      "description": "Number of the GitHub issue this module closes.",
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

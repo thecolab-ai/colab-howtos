@@ -1,0 +1,52 @@
+name: Validate
+
+# Runs every check on each PR and on main. The Pages workflow calls this one first,
+# so nothing is deployed unless it passes.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      # Every ISSUE(<slug>) placeholder in recaps/ must be replaced with an issue link.
+      REQUIRE_ISSUE_LINKS: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate the course (mycourse validator)
+        run: |
+          status=0
+          for course in courses/*/; do
+            echo "::group::${course}"
+            python tools/validate_course.py "${course}" --repo-root . || status=1
+            echo "::endgroup::"
+          done
+          exit "${status}"
+
+      - name: Install check-jsonschema
+        run: pip install "check-jsonschema==0.39.0"
+
+      - name: Validate howto.json against the schema
+        run: check-jsonschema --schemafile schema/howto.schema.json modules/*/howto.json
+
+      - name: Repo checks (frontmatter, modules, course, privacy, videos, issue links)
+        run: python scripts/check_repo.py
+
+      - name: INDEX.md is up to date
+        run: python scripts/build_index.py --check
+
+      - name: The site builds
+        run: python scripts/build_site.py --out "${RUNNER_TEMP}/site"

@@ -1,0 +1,16 @@
+{
+  "id": "example-howto",
+  "title": "Example: how a how-to module is laid out",
+  "description": "A three-step dummy guide that shows the files a how-to module needs. Copy this folder when you start a new module. It is hidden on the site and is never published.",
+  "tags": [
+    "example"
+  ],
+  "lessons": [
+    {
+      "id": "steps",
+      "title": "Example: how a how-to module is laid out",
+      "type": "content",
+      "markdownPath": "01-steps.md"
+    }
+  ]
+}

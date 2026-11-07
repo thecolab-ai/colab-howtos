@@ -1,0 +1,72 @@
+name: Pages
+
+# Builds the viewer and deploys it to GitHub Pages (https://thecolab-ai.github.io/colab-howtos/).
+# Runs the Validate workflow first; nothing deploys unless it passes. The schedule keeps the
+# Help wanted list (open issues labelled `module`) fresh between pushes.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # Every 6 hours.
+    - cron: "41 */6 * * *"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  issues: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    uses: ./.github/workflows/validate.yml
+
+  build:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch open module issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p site/data
+          # A failed fetch shouldn't block the deploy: without the file the site links to GitHub.
+          if gh api -X GET "repos/${GITHUB_REPOSITORY}/issues" \
+              -f state=open -f labels=module -f per_page=100 \
+              --paginate --slurp > "${RUNNER_TEMP}/issues.json"; then
+            mv "${RUNNER_TEMP}/issues.json" site/data/issues.json
+          else
+            echo "::warning title=Issues not fetched::The Help wanted list will link to GitHub instead."
+          fi
+
+      - name: Build the site
+        run: python scripts/build_site.py --out _site --issues site/data/issues.json
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

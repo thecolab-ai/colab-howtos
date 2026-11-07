@@ -1,0 +1,173 @@
+name: Publish to mycourse
+
+# Optional, maintainers only. Copies the community modules (never the example) and the
+# rolling course into mycourse-work/thecolab on a new branch and opens a PR there. It never
+# pushes to main: merging that PR is what publishes (thecolab's sync-to-r2 workflow
+# registers the course as public). Does nothing while there are no real modules.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      TARGET_REPO: mycourse-work/thecolab
+      TARGET_BASE: main
+      BRANCH: colab-howtos/${{ github.run_id }}
+      COURSE: colab-howtos
+    steps:
+      - name: Check out colab-howtos
+        uses: actions/checkout@v4
+        with:
+          path: source
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: List the modules to publish
+        id: modules
+        working-directory: source
+        run: |
+          set -euo pipefail
+          # Non-example modules, in course order.
+          python - > "${RUNNER_TEMP}/modules.txt" <<'PY'
+          import json
+          from pathlib import Path
+          course = json.loads(Path("courses/colab-howtos/course.json").read_text(encoding="utf-8"))
+          for module_id in course["modules"]:
+              howto = json.loads(Path("modules", module_id, "howto.json").read_text(encoding="utf-8"))
+              if howto.get("example") is not True:
+                  print(module_id)
+          PY
+          count="$(wc -l < "${RUNNER_TEMP}/modules.txt" | tr -d ' ')"
+          echo "count=${count}" >> "${GITHUB_OUTPUT}"
+          if [ "${count}" = "0" ]; then
+            echo "::notice title=Nothing to publish::No community modules yet (only the example). Nothing was copied."
+          else
+            echo "Publishing ${count} module(s):"
+            cat "${RUNNER_TEMP}/modules.txt"
+          fi
+
+      - name: Check the publish token is set
+        if: steps.modules.outputs.count != '0'
+        env:
+          PUBLISH_TOKEN: ${{ secrets.THECOLAB_PUBLISH_TOKEN }}
+        run: |
+          if [ -z "${PUBLISH_TOKEN}" ]; then
+            echo "::error title=Missing secret THECOLAB_PUBLISH_TOKEN::Add a fine-grained token limited to ${TARGET_REPO} (Contents: read and write, Pull requests: read and write) as the repository secret THECOLAB_PUBLISH_TOKEN, then run this workflow again."
+            exit 1
+          fi
+
+      - name: Validate before publishing
+        if: steps.modules.outputs.count != '0'
+        working-directory: source
+        env:
+          REQUIRE_ISSUE_LINKS: "1"
+        run: |
+          set -euo pipefail
+          python tools/validate_course.py "courses/${COURSE}" --repo-root .
+          python scripts/check_repo.py
+          python scripts/build_index.py --check
+
+      - name: Check out ${{ env.TARGET_REPO }}
+        if: steps.modules.outputs.count != '0'
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TARGET_REPO }}
+          ref: ${{ env.TARGET_BASE }}
+          token: ${{ secrets.THECOLAB_PUBLISH_TOKEN }}
+          path: target
+
+      - name: Copy modules and the course
+        if: steps.modules.outputs.count != '0'
+        run: |
+          set -euo pipefail
+          mkdir -p target/modules target/courses
+          while IFS= read -r module_id; do
+            rsync -a --delete --exclude .gitkeep "source/modules/${module_id}/" "target/modules/${module_id}/"
+          done < "${RUNNER_TEMP}/modules.txt"
+          rsync -a --delete --exclude .gitkeep "source/courses/${COURSE}/" "target/courses/${COURSE}/"
+
+          # The course lists the example module too; publish it without.
+          python - "target/courses/${COURSE}/course.json" "${RUNNER_TEMP}/modules.txt" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          course_path, keep_path = Path(sys.argv[1]), Path(sys.argv[2])
+          keep = set(keep_path.read_text(encoding="utf-8").split())
+          course = json.loads(course_path.read_text(encoding="utf-8"))
+          course["modules"] = [m for m in course["modules"] if m in keep]
+          course_path.write_text(json.dumps(course, indent=2) + "\n", encoding="utf-8")
+          PY
+
+          # Never delete published modules: progress records point at their ids.
+          # List any the source no longer has so a maintainer can decide.
+          : > "${RUNNER_TEMP}/orphans.txt"
+          for dir in target/modules/howto-*/ target/courses/colab-howtos*/; do
+            [ -d "${dir}" ] || continue
+            rel="${dir#target/}"
+            [ -d "source/${rel}" ] || echo "- \`${rel%/}\`" >> "${RUNNER_TEMP}/orphans.txt"
+          done
+
+      - name: Validate in ${{ env.TARGET_REPO }}
+        if: steps.modules.outputs.count != '0'
+        run: python source/tools/validate_course.py "target/courses/${COURSE}" --repo-root target
+
+      - name: Commit to a new branch and open a PR
+        if: steps.modules.outputs.count != '0'
+        working-directory: target
+        env:
+          GH_TOKEN: ${{ secrets.THECOLAB_PUBLISH_TOKEN }}
+          SOURCE_REPO: ${{ github.repository }}
+          SOURCE_SHA: ${{ github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          case "${BRANCH}" in
+            colab-howtos/*) ;;
+            *) echo "::error::Refusing to push to ${BRANCH}"; exit 1 ;;
+          esac
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "${BRANCH}"
+          git add -A modules courses
+          if git diff --cached --quiet; then
+            echo "::notice::Nothing to publish: ${TARGET_REPO} already matches ${SOURCE_REPO}@${SOURCE_SHA::7}."
+            exit 0
+          fi
+
+          {
+            echo "Publishes the Colab how-tos from ${SOURCE_REPO}@${SOURCE_SHA::7}."
+            echo
+            echo "Merging this PR runs sync-to-r2, which uploads the files and registers the"
+            echo "course as public for the thecolab tenant straight away. Review before merging."
+            echo
+            echo "Changed files:"
+            echo
+            echo '```'
+            git diff --cached --name-status | head -200
+            echo '```'
+            if [ -s "${RUNNER_TEMP}/orphans.txt" ]; then
+              echo
+              echo "In ${TARGET_REPO} but no longer in ${SOURCE_REPO} (left in place, not deleted):"
+              echo
+              cat "${RUNNER_TEMP}/orphans.txt"
+            fi
+            echo
+            echo "Workflow run: ${RUN_URL}"
+          } > "${RUNNER_TEMP}/pr.md"
+
+          git commit -q -m "Publish Colab how-tos from ${SOURCE_REPO}@${SOURCE_SHA::7}"
+          git push origin "HEAD:refs/heads/${BRANCH}"
+          gh pr create --repo "${TARGET_REPO}" --base "${TARGET_BASE}" --head "${BRANCH}" \
+            --title "Publish Colab how-tos (${SOURCE_SHA::7})" --body-file "${RUNNER_TEMP}/pr.md"
