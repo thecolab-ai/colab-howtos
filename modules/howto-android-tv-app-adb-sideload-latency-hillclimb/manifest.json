@@ -1,0 +1,62 @@
+{
+  "id": "howto-android-tv-app-adb-sideload-latency-hillclimb",
+  "title": "Have Claude build an Android TV app, sideload it over ADB, then hill-climb a latency metric",
+  "description": "Have a coding agent build a native Android TV app, install it on your TV over the network with ADB, and then improve one measured number in a loop: the time from picking a stream to its first frame on screen.",
+  "tags": [
+    "android-tv",
+    "adb",
+    "claude-code",
+    "kotlin",
+    "latency"
+  ],
+  "lessons": [
+    {
+      "id": "steps",
+      "title": "Have Claude build an Android TV app, sideload it over ADB, then hill-climb a latency metric",
+      "type": "content",
+      "markdownPath": "01-steps.md"
+    },
+    {
+      "id": "network-debugging",
+      "title": "Turn on developer options and network debugging",
+      "type": "content",
+      "markdownPath": "02-network-debugging.md"
+    },
+    {
+      "id": "scaffold",
+      "title": "Scaffold a Compose for TV app and install it",
+      "type": "content",
+      "markdownPath": "03-scaffold.md"
+    },
+    {
+      "id": "kev-tv-worked-example",
+      "title": "Worked example: how Kev TV was built",
+      "type": "content",
+      "markdownPath": "04-kev-tv-worked-example.md"
+    },
+    {
+      "id": "tailscale-and-pairing",
+      "title": "Put the TV on Tailscale and pair your app over ADB",
+      "type": "content",
+      "markdownPath": "05-tailscale-and-pairing.md"
+    },
+    {
+      "id": "time-to-first-frame",
+      "title": "Measure time to first frame",
+      "type": "content",
+      "markdownPath": "06-time-to-first-frame.md"
+    },
+    {
+      "id": "hill-climb",
+      "title": "Hill-climb the number",
+      "type": "content",
+      "markdownPath": "07-hill-climb.md"
+    },
+    {
+      "id": "shared-tv-safety",
+      "title": "Keep a shared TV safe while an agent works on it",
+      "type": "content",
+      "markdownPath": "08-shared-tv-safety.md"
+    }
+  ]
+}
