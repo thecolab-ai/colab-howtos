@@ -13,4 +13,8 @@ Newest first.
 
 ## Modules
 
-No community modules yet. Pick one from the [open module issues](https://github.com/thecolab-ai/colab-howtos/issues?q=is%3Aopen+label%3Amodule) and see [CONTRIBUTING.md](CONTRIBUTING.md).
+Tested first, then draft, then seed.
+
+| Module | Status | Tags | Difficulty | Contributors | Recap |
+|---|---|---|---|---|---|
+| [Have Claude build an Android TV app, sideload it over ADB, then hill-climb a latency metric](modules/howto-android-tv-app-adb-sideload-latency-hillclimb/01-steps.md) | draft | android-tv, adb, claude-code, kotlin, latency | intermediate | Adam | 2026-W45 |
