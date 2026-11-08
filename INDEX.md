@@ -17,4 +17,4 @@ Tested first, then draft, then seed.
 
 | Module | Status | Tags | Difficulty | Contributors | Recap |
 |---|---|---|---|---|---|
-| [Have a coding agent build an Android TV app in Kotlin, sideload it over ADB, and hill-climb it](modules/howto-android-tv-app-adb-sideload-latency-hillclimb/01-steps.md) | draft | android-tv, adb, kotlin, jetpack-compose, coding-agents, claude-code, hill-climb | intermediate | Adam | 2026-W45 |
+| [Have a coding agent build an Android TV app in Kotlin, sideload it over ADB, and hill-climb it](modules/howto-android-tv-app-adb-sideload-latency-hillclimb/01-steps.md) | draft | android-tv, adb, kotlin, jetpack-compose, coding-agents, claude-code, hill-climb | intermediate | The Colab | 2026-W45 |
