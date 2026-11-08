@@ -27,9 +27,9 @@ The TV in the lounge belongs to everyone in the house. An agent with ADB can ins
 
 ## Keep the app itself safe
 
-- **Pair with a short-lived link.** Kev TV pairs once with a one-time link (lesson 5). It keeps its device token in private storage, encrypted with AES-256-GCM. The key is held in the Android Keystore and can't be exported. App backup is off. The token is never logged.
-- **Show, don't act.** Kev TV only reads. It can't send messages or approve anything. But its token is an owner token, so the server would allow more if the TV were compromised. A display-only role on the server is a follow-up.
-- **Private network only.** The app reaches the server over Tailscale, not the open internet. It refuses a plain `http://` address unless it's on the tailnet or loopback.
+- **Pair with a short-lived link.** Use a one-time pairing link that expires (lesson 5). Store whatever the app gets back in private, encrypted storage (the Android Keystore), turn app backup off, and never log it.
+- **Show, don't act.** A wall display only needs to read. Give it the least access your server allows.
+- **Private network only.** Reach the server over a private network like Tailscale, not the open internet. Refuse plain `http://` addresses anywhere else.
 - **Look after the screen.** A dashboard stays on for hours. Kev TV shifts its content a few pixels every 3 minutes, avoids big white blocks, and dims from 23:00 to 06:00 after 10 quiet minutes.
 
 ## Turn it off when you're done

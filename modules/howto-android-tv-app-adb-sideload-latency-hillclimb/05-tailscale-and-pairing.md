@@ -53,7 +53,7 @@ All the steps here were run by hand on 8 Nov 2026 on an Nvidia Shield TV with An
 
 ## Pair your app by pasting a link
 
-Most apps that talk to a server pair once with a code or link. Kev's server makes a one-time `kev://pair?p=...` link of about 180 characters. Nobody wants to type that with a remote.
+Most apps that talk to a server pair once with a code or link. Ours is a one-time link of about 180 characters. Nobody wants to type that with a remote.
 
 Kev TV takes the link in a text field. Here is how to fill it from ADB. Your app's screen will differ, so read its layout first (step 2).
 
@@ -97,7 +97,7 @@ Kev TV takes the link in a text field. Here is how to fill it from ADB. Your app
 - Tapping a Compose button by the bounds of its text label did nothing for us. The label's bounds cover only the text, not the button. Give your app a keyboard action (such as `ImeAction.Go`) so Enter does the job.
 - `input text` treats spaces and some symbols specially. Kev's link is base64url, so it needed no escaping. A link with spaces or `&` needs more care. (untested)
 - The pairing link is a secret while it's valid. It sits in your shell history and on the TV's screen for a moment. Use a short-lived, one-time link, make it just before you paste it, and never put a real one in a log, a repo or a chat.
-- Kev TV only allows a plain `http://` server address if it's on the tailnet (`100.64.0.0/10` or `*.ts.net`) or loopback. Do the same, so your token never crosses the internet over plain HTTP.
+- Only allow a plain `http://` server address on your private network or loopback, so nothing secret crosses the internet unencrypted.
 
 ## Notes
 

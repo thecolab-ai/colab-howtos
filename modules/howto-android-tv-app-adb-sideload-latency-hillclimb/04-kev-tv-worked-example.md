@@ -32,7 +32,7 @@ At the time of the measurements in lessons 6 and 7, the app had:
 - **Cameras**: a 2x2 grid of stills. OK opens one full screen with live video, using Media3 ExoPlayer and HLS. Left and Right switch camera.
 - **A demo mode** with made-up data and public test streams. Every screenshot and every measurement used it.
 - **Kev's look**: colours, type scale and logo ported from the Apple apps' design tokens.
-- **A small server change**: a new device platform name so the server accepts a TV, and an ops endpoint that is off by default.
+- **A small server change**: a new device platform name so the server accepts a TV.
 
 The app has been redesigned since then. The method in this module stays the same.
 
