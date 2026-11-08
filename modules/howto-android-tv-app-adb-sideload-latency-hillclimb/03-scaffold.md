@@ -15,7 +15,7 @@ It uses Jetpack Compose with the Compose for TV library (`androidx.tv:tv-materia
 1. **Install the SDK parts the build needs.** (Run by the earlier part of this build, into a project folder.)
 
    ```bash
-   sdkmanager --sdk_root="$HOME/android" "platforms;android-35" "build-tools;35.0.0"
+   ~/android/cmdline-tools/latest/bin/sdkmanager --sdk_root="$HOME/android" "platforms;android-35" "build-tools;35.0.0"
    ```
 
 2. **Make the project folders.**

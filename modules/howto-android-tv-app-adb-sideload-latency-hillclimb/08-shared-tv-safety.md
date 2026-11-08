@@ -6,10 +6,10 @@ The TV in the lounge belongs to everyone in the house. An agent with ADB can ins
 
 1. **Only touch your own app.** Install and update it with `adb install -r`. Never uninstall, disable or update another app, the launcher, or anything the household uses.
 2. **Never change settings.** That includes developer settings like animation scale. Our TV had animations off, and the first build looked frozen. The fix went into the app, not the TV's settings (lesson 4).
-3. **Check who's watching.** Before each measuring run, check which app is in front. If it's not your app, the home screen or the screensaver, someone is using the TV. Wait 10 minutes and check again.
+3. **Check who's watching.** Before each measuring run, check which app is in front. If it's not your app, the home screen or the screensaver, someone is using the TV. Wait 10 minutes and check again. If the command prints nothing, treat that as "someone might be watching" too. (Checked on Android 11 only.)
 
    ```bash
-   adb -s 192.168.1.x:5555 shell dumpsys activity activities | grep -m1 mResumedActivity
+   adb -s 192.168.1.x:5555 shell dumpsys activity activities | grep -m1 -E "topResumedActivity|mResumedActivity"
    ```
 
 4. **Leave it how you found it.** Go back to the home screen at the end. (untested)

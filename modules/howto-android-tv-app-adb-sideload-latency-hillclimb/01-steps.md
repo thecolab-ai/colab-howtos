@@ -38,6 +38,8 @@ The agent can run on any computer. Pick one machine on the home network to run a
    sha256sum commandlinetools-linux-*_latest.zip
    ```
 
+   On macOS use `shasum -a 256` instead.
+
 3. Unzip it into your home folder. No admin rights needed.
 
    ```bash
@@ -104,7 +106,7 @@ The agent can run on any computer. Pick one machine on the home network to run a
 
 ## Gotchas
 
-- Pass `-s <address>` on every command once more than one device is connected. Without it adb refuses or picks the wrong one.
+- Pass `-s <address>` on every command once more than one device is connected. Without it adb stops with "more than one device/emulator".
 - `unauthorized` means nobody accepted the prompt on the TV. Look at the TV. (untested: run `adb kill-server`, then connect again, to get a fresh prompt.)
 - Run adb from one machine only. Two adb servers connected to the same TV bump each other off.
 - A 4K screenshot is several MB. Scale it down before an agent looks at it.

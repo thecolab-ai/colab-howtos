@@ -31,6 +31,7 @@ All the steps here were run by hand on 8 Nov 2026 on an Nvidia Shield TV with An
 
    ```bash
    adb -s 192.168.1.x:5555 shell uiautomator dump /sdcard/ui.xml
+   # When you have read it: adb -s 192.168.1.x:5555 shell rm /sdcard/ui.xml
    adb -s 192.168.1.x:5555 shell cat /sdcard/ui.xml
    ```
 
@@ -67,6 +68,7 @@ Kev TV takes the link in a text field. Here is how to fill it from ADB. Your app
 
    ```bash
    adb -s 192.168.1.x:5555 shell uiautomator dump /sdcard/ui.xml
+   # When you have read it: adb -s 192.168.1.x:5555 shell rm /sdcard/ui.xml
    adb -s 192.168.1.x:5555 shell cat /sdcard/ui.xml
    ```
 

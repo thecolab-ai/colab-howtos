@@ -34,10 +34,11 @@ set -uo pipefail
 v=$1; n=${2:-8}; cold=${3:-7}
 A="adb -s 192.168.1.x:5555"
 P=com.example.tv
-top() { $A shell dumpsys activity activities | grep -m1 mResumedActivity; }
-# Ours, the launcher, the screensaver, or nothing in front.
-ours() { t=$(top); [ -z "$t" ] || grep -qE "$P|YOUR_LAUNCHER_PACKAGE|Dream" <<<"$t"; }
-guard() { until ours; do echo "# $(date +%H:%M) another app in front, waiting 10 min" >&2; sleep 600; done; }
+# Android 13+ prints topResumedActivity; Android 11-12 print mResumedActivity.
+top() { $A shell dumpsys activity activities 2>/dev/null | grep -m1 -E "topResumedActivity|mResumedActivity"; }
+# Ours, the launcher or the screensaver in front. Empty output or an adb error counts as "someone might be watching".
+ours() { t=$(top); [ -n "$t" ] && grep -qE "$P|YOUR_LAUNCHER_PACKAGE|Dream" <<<"$t"; }
+guard() { until ours; do echo "# $(date +%H:%M) another app in front (or adb could not tell), waiting 10 min" >&2; sleep 600; done; }
 # End a screensaver so frames really reach the screen. Changes no settings.
 wake() { $A shell input keyevent KEYCODE_WAKEUP; }
 front() { top | grep -q "$P"; }
@@ -76,11 +77,15 @@ for i in $(seq 1 "$n"); do
   echo -e "$v\tswitch\t$i\t$(( (c + 1) % 4 ))\t$(delta)"; sleep 2
   $A shell input keyevent 4; sleep 3
 done
+# Leave the TV how you found it: Kev TV's normal page time, then the home screen.
+$A shell am start -n $P/.MainActivity --ei dwell 25 >/dev/null; sleep 2
+$A shell input keyevent KEYCODE_HOME
 ```
 
 Some notes on it:
 
-- To find your launcher's package, go to the home screen and run `adb shell dumpsys activity activities | grep mResumedActivity`.
+- To find your launcher's package, go to the home screen and run `adb shell dumpsys activity activities | grep -E "topResumedActivity|mResumedActivity"`.
+- We only ran this script on Android 11. The `topResumedActivity` match is for Android 13 and later, where `mResumedActivity` is gone (untested). If the check prints nothing, the script waits instead of carrying on.
 - `--ei dwell 600` is a Kev TV extra. It holds each page for 600 s, so the app doesn't rotate away mid-run. Kev TV saves it, so set it back afterwards (`--ei dwell 25` for Kev TV).
 - Stage logs (lesson 6) go to stderr with a `#` in front. The TSV stays clean.
 
@@ -128,7 +133,7 @@ Cold start barely moved: 507 to 513 ms.
 
 **Noise beat most changes.** v0r and v0b run the same playback code. They ran minutes apart. Streams 1 and 2 were three to four times slower in v0r. Nothing in the app changed. The network or the stream's CDN did. Most changes you'd try save less than that.
 
-**First visits are different.** The first visit to a stream in each run was often 2.5 to 3.5 s. Repeat visits were usually under 0.3 s, or about 1.6 s for the live stream. With 8 trials over 4 streams, one slow first visit moves the median a lot.
+**First visits are different.** The first visit to a stream in each run was often 2.5 to 3.5 s. Repeat visits took 0.2 to 1.6 s. With 8 trials over 4 streams, one slow first visit moves the median a lot.
 
 **The network is the wait.** The stage logs (lesson 6) showed the decoder starting in 20 to 34 ms. Playlist loads that missed the cache took 270 to 2,000 ms each. Time spent on the decoder would be wasted.
 
