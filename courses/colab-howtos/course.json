@@ -5,6 +5,7 @@
   "estimatedDuration": "Self-paced",
   "welcomePath": "welcome.md",
   "modules": [
+    "howto-android-tv-app-adb-sideload-latency-hillclimb",
     "example-howto"
   ]
 }

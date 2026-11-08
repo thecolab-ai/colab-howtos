@@ -1,0 +1,82 @@
+{
+  "id": "howto-android-tv-app-adb-sideload-latency-hillclimb",
+  "title": "Have a coding agent build an Android TV app in Kotlin, sideload it over ADB, and hill-climb it",
+  "description": "Give a coding agent such as Claude Code or Codex a written brief, a headless Android toolchain and ADB access to a real TV. It builds a Kotlin app with Jetpack Compose for TV, installs it over the network, reads the screen to check its own work, and then improves one measured number in a loop.",
+  "tags": [
+    "android-tv",
+    "adb",
+    "kotlin",
+    "jetpack-compose",
+    "coding-agents",
+    "claude-code",
+    "hill-climb"
+  ],
+  "lessons": [
+    {
+      "id": "steps",
+      "title": "Have a coding agent build an Android TV app in Kotlin, sideload it over ADB, and hill-climb it",
+      "type": "content",
+      "markdownPath": "01-steps.md"
+    },
+    {
+      "id": "brief-and-steering",
+      "title": "Write the brief, and steer the agent with a file",
+      "type": "content",
+      "markdownPath": "02-brief-and-steering.md"
+    },
+    {
+      "id": "shared-tv-safety",
+      "title": "Rules for a shared TV",
+      "type": "content",
+      "markdownPath": "03-shared-tv-safety.md"
+    },
+    {
+      "id": "headless-toolchain",
+      "title": "Give the agent a toolchain it can run headless",
+      "type": "content",
+      "markdownPath": "04-headless-toolchain.md"
+    },
+    {
+      "id": "network-debugging",
+      "title": "Turn on network debugging and connect with ADB",
+      "type": "content",
+      "markdownPath": "05-network-debugging.md"
+    },
+    {
+      "id": "scaffold",
+      "title": "Scaffold a Compose for TV app in Kotlin",
+      "type": "content",
+      "markdownPath": "06-scaffold.md"
+    },
+    {
+      "id": "device-loop",
+      "title": "The agent's loop: build, install, launch, read the screen",
+      "type": "content",
+      "markdownPath": "07-device-loop.md"
+    },
+    {
+      "id": "measure-on-device",
+      "title": "Measure a number on the real TV",
+      "type": "content",
+      "markdownPath": "08-measure-on-device.md"
+    },
+    {
+      "id": "hill-climb",
+      "title": "Hill-climb the number",
+      "type": "content",
+      "markdownPath": "09-hill-climb.md"
+    },
+    {
+      "id": "example-run",
+      "title": "Example run: what the agent built and what went wrong",
+      "type": "content",
+      "markdownPath": "10-example-run.md"
+    },
+    {
+      "id": "tailscale-and-pairing",
+      "title": "Optional: if your app talks to a server, Tailscale and pairing over ADB",
+      "type": "content",
+      "markdownPath": "11-tailscale-and-pairing.md"
+    }
+  ]
+}

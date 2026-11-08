@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schema/howto.schema.json",
+  "title": "Have a coding agent build an Android TV app in Kotlin, sideload it over ADB, and hill-climb it",
+  "tags": [
+    "android-tv",
+    "adb",
+    "kotlin",
+    "jetpack-compose",
+    "coding-agents",
+    "claude-code",
+    "hill-climb"
+  ],
+  "difficulty": "intermediate",
+  "status": "draft",
+  "contributors": [
+    "Adam"
+  ],
+  "recap": "2026-W45",
+  "issue": 3
+}

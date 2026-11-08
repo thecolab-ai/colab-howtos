@@ -13,4 +13,8 @@ Newest first.
 
 ## Modules
 
-No community modules yet. Pick one from the [open module issues](https://github.com/thecolab-ai/colab-howtos/issues?q=is%3Aopen+label%3Amodule) and see [CONTRIBUTING.md](CONTRIBUTING.md).
+Tested first, then draft, then seed.
+
+| Module | Status | Tags | Difficulty | Contributors | Recap |
+|---|---|---|---|---|---|
+| [Have a coding agent build an Android TV app in Kotlin, sideload it over ADB, and hill-climb it](modules/howto-android-tv-app-adb-sideload-latency-hillclimb/01-steps.md) | draft | android-tv, adb, kotlin, jetpack-compose, coding-agents, claude-code, hill-climb | intermediate | Adam | 2026-W45 |
