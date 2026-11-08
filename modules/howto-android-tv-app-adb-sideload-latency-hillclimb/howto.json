@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schema/howto.schema.json",
+  "title": "Have Claude build an Android TV app, sideload it over ADB, then hill-climb a latency metric",
+  "tags": [
+    "android-tv",
+    "adb",
+    "claude-code",
+    "kotlin",
+    "latency"
+  ],
+  "difficulty": "intermediate",
+  "status": "draft",
+  "contributors": [
+    "Adam"
+  ],
+  "recap": "2026-W45",
+  "issue": 3
+}
