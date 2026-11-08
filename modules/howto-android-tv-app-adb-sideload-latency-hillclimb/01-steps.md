@@ -29,7 +29,7 @@ The lessons use one example: an always-on dashboard app. All the numbers come fr
 - A coding agent that can run shell commands, such as Claude Code or Codex.
 - About 2.5 GB of disk for the JDK, the Android SDK parts and the Gradle cache. You don't need Android Studio or admin rights.
 
-![The setup: the agent builds the app, one home machine runs adb and talks to the TV](assets/diagram-setup.png)
+![The setup: the agent builds the app, one home machine runs adb and talks to the TV](./assets/diagram-setup.png)
 
 The agent can run on any computer. Pick one machine on the TV's network to run adb, and send every install and every measurement through it. In our run the agent built on a separate server and reached that machine over SSH.
 

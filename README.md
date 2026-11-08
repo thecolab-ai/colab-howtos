@@ -27,7 +27,7 @@ modules/example-howto/            the format example (hidden, never published)
 courses/colab-howtos/             the one course: course.json lists every module
 site/                             the viewer: index.html, app.js, md.js, styles.css, no build step
 schema/howto.schema.json          JSON Schema for howto.json
-tools/validate_course.py          the mycourse course validator, vendored (see Licence)
+tools/validate_course.py          the mycourse course validator, vendored from mycourse-work/skills (see Licence)
 scripts/check_repo.py             frontmatter, module, course, privacy, video and issue-link checks
 scripts/build_index.py            builds INDEX.md from the recaps and modules
 scripts/build_site.py             assembles the site into _site/ with data/content.json
@@ -99,7 +99,7 @@ If you're mentioned anywhere here and want to be removed or corrected, [open an 
 - Text (recaps, modules and docs): [CC BY 4.0](LICENSE-CONTENT). Share and adapt it, with credit to The Colab community.
 - Code written for this repo (scripts, the site and workflows): [MIT](LICENSE).
 - Commands and snippets quoted from third-party docs or repos stay under their owners' terms; see the linked source.
-- `tools/validate_course.py` is vendored from the mycourse authoring tooling and is not covered by this repo's MIT licence.
+- `tools/validate_course.py` is vendored from the public [mycourse-work/skills](https://github.com/mycourse-work/skills) repo (commit pinned in its header) and is not covered by this repo's MIT licence.
 - The Colab name and logo are not covered by either licence.
 
 Guides describe community experience, not official vendor advice. Check the linked docs and use at your own risk.
