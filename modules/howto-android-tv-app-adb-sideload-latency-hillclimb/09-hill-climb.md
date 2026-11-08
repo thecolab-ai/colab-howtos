@@ -2,7 +2,7 @@
 
 Once the agent can measure the number on its own (lesson 8), the rest is a loop. Change one thing. Build and install it. Measure it. Keep it if it's better, throw it away if not.
 
-![The hill-climb loop: change one thing, build and install, measure, compare medians, keep or revert](assets/diagram-loop.png)
+![The hill-climb loop: change one thing, build and install, measure, compare medians, keep or revert](./assets/diagram-loop.png)
 
 Our run got as far as three measured baseline builds. Then it was stopped so the app could go live. So this lesson has a real script and real baseline numbers, but no keep-or-revert round. What the baselines showed is still the most useful part.
 

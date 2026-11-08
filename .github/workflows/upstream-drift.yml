@@ -19,8 +19,8 @@ jobs:
   upstream-drift:
     runs-on: ubuntu-latest
     env:
-      UPSTREAM_REPO: mycourse-work/dronetrust
-      UPSTREAM_PATH: .skills/mycourse-course-authoring/scripts/validate_course.py
+      UPSTREAM_REPO: mycourse-work/skills
+      UPSTREAM_PATH: course-validator/scripts/validate_course.py
       VENDORED: tools/validate_course.py
       ISSUE_TITLE: "Upstream drift: tools/validate_course.py"
     steps:

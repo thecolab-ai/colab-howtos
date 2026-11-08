@@ -33,4 +33,4 @@ Status `tested`: a maintainer ran these three steps on 8 Nov 2026.
 
 ## Links
 
-- [CONTRIBUTING.md](../../CONTRIBUTING.md)
+- [CONTRIBUTING.md](https://github.com/thecolab-ai/colab-howtos/blob/main/CONTRIBUTING.md)
